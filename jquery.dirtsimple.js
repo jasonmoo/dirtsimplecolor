@@ -19,8 +19,6 @@ jQuery.fn.dirtsimplecolor = (function($, CUBE_SRC) {
 
 			var button = $(el),
 				button_offset = button.offset(),
-				ct = document.cookie.match("dirtsimplecolor_"+i+"=(.+?)(;|$)"),
-				TERMINAL_COLOR = ct && ct.length ? ct[1] : '0,0,0', // default black
 				down = false,
 				canvas = document.createElement('canvas'),
 				ctx = canvas.getContext('2d');
@@ -48,19 +46,24 @@ jQuery.fn.dirtsimplecolor = (function($, CUBE_SRC) {
 				$(canvas).toggle();
 			});
 
+			var cookie_val = document.cookie.match(canvas.id+"=(.+?)(;|$)"),
+				COLOR = cookie_val && cookie_val.length ? cookie_val[1] : '0,0,0'; // default black
+
+			callback(COLOR);
+
 			function update_color(x,y, save) {
 
 				var d = ctx.getImageData(x,y,1,1);
 
 				if (d instanceof ImageData) {
-					TERMINAL_COLOR = [].slice.call(d.data,0,3);
+					COLOR = [].slice.call(d.data,0,3);
 
 					if (save) {
 						var expire = Date.now()+ONE_YEAR; // a year
-						document.cookie = "terminal_color="+TERMINAL_COLOR+";max-age="+expire+";"
+						document.cookie = canvas.id+"="+COLOR+";max-age="+expire+";"
 					}
 
-					callback(TERMINAL_COLOR);
+					callback(COLOR);
 				}
 			}
 		
